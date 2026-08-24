@@ -135,6 +135,31 @@ Hermes cron jobs (local machine)
 
 ---
 
+## 👥 Contributors
+
+<table>
+  <tr>
+    <td align="center">
+      <a href="https://github.com/mohammed-yaseen036">
+        <img src="https://avatars.githubusercontent.com/mohammed-yaseen036?size=100" width="80px;" alt=""/>
+        <br /><b>Mohammed Yaseen</b><br />
+        <sub>Creator · Automation · Course Design</sub>
+      </a>
+    </td>
+    <td align="center">
+      <a href="https://github.com/Mohammed-Ruman-Shaik">
+        <img src="https://avatars.githubusercontent.com/Mohammed-Ruman-Shaik?size=100" width="80px;" alt=""/>
+        <br /><b>Mohammed Ruman Shaik</b><br />
+        <sub>Contributor · DSA Solutions & Review</sub>
+      </a>
+    </td>
+  </tr>
+</table>
+
+Contributions are welcome! Fork the repo, add your solution, and open a pull request.
+
+---
+
 <div align="center">
 
 **"You don't have to be extreme, just consistent."**
