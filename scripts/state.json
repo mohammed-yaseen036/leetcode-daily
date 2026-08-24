@@ -4,11 +4,6 @@
  "streak": 0,
  "longest_streak": 0,
  "last_done": null,
- "days": {
-  "2026-08-24": {
-   "prepared": true,
-   "committed": false
-  }
- },
+ "days": {},
  "total_solved": 0
 }
