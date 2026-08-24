@@ -46,6 +46,35 @@
   #progressfill { height:100%; background:linear-gradient(90deg,#38bdf8,#4ade80); width:0%; transition:width .3s; }
   #progresstext { font-size:12px; color:#94a3b8; margin-top:6px; }
   ::-webkit-scrollbar{width:8px} ::-webkit-scrollbar-thumb{background:#475569;border-radius:9px}
+  /* light theme */
+  body.light { background:#f8fafc; color:#1e293b; }
+  body.light #sidebar { background:#ffffff; box-shadow:2px 0 12px rgba(0,0,0,.08); }
+  body.light .lesson-link { color:#334155; } body.light .lesson-link:hover{ background:#e2e8f0; }
+  body.light h2.title, body.light #sidebar h1 { color:#0f172a; }
+  body.light code.inline { background:#e2e8f0; color:#b45309; }
+  body.light pre { background:#0f172a; border-color:#cbd5e1; } /* keep code blocks dark for contrast */
+  body.light .badge { background:#e2e8f0; color:#0369a1; }
+  body.light table th { background:#e2e8f0; color:#075985; } body.light td { border-color:#cbd5e1; }
+  body.light .phase { color:#b45309; }
+  #toolbar { position:fixed; top:14px; right:16px; display:flex; gap:10px; z-index:50; }
+  #toolbar button { background:#1e293b; color:#e2e8f0; border:1px solid #475569; border-radius:99px;
+    padding:8px 14px; cursor:pointer; font-size:14px; }
+  body.light #toolbar button { background:#fff; color:#1e293b; border-color:#cbd5e1; }
+  #quizbtn { animation:pulse 3s infinite; }
+  @keyframes pulse { 0%,100%{box-shadow:0 0 0 0 rgba(56,189,248,.5)} 50%{box-shadow:0 0 0 6px rgba(56,189,248,0)} }
+  #quizmodal { display:none; position:fixed; inset:0; background:rgba(0,0,0,.65); z-index:100;
+    align-items:center; justify-content:center; padding:20px; }
+  #quizcard { background:#1e293b; color:#e2e8f0; border-radius:16px; max-width:560px; width:100%;
+    padding:28px; border:1px solid #475569; }
+  body.light #quizcard { background:#fff; color:#1e293b; border-color:#cbd5e1; }
+  #quizcard h3 { margin-top:0; }
+  .qopt { display:block; width:100%; text-align:left; margin:8px 0; padding:12px 16px; border-radius:10px;
+    background:#0f172a; color:#e2e8f0; border:1px solid #475569; cursor:pointer; font-size:14.5px; }
+  body.light .qopt { background:#f1f5f9; color:#1e293b; border-color:#cbd5e1; }
+  .qopt:hover { border-color:#38bdf8; }
+  .qopt.correct { border-color:#4ade80; background:rgba(74,222,128,.15); }
+  .qopt.wrong { border-color:#f87171; background:rgba(248,113,113,.15); }
+  #qscore { font-size:13px; color:#94a3b8; margin-top:12px; }
 </style>
 </head>
 <body>
@@ -59,6 +88,15 @@
     <div id="progresstext"></div>
   </div>
 </nav>
+
+<div id="toolbar">
+  <button id="quizbtn" title="Daily quiz">🧠 Quiz</button>
+  <button id="themebtn" title="Toggle theme">☀️ Light</button>
+</div>
+
+<div id="quizmodal">
+  <div id="quizcard"></div>
+</div>
 
 <main><div id="content"></div></main>
 
@@ -897,6 +935,61 @@ renderAll();
 <script>
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js').catch(()=>{});
+}
+</script>
+<script>
+/* ---- Theme toggle (co-authored by Mohammed Ruman Shaik) ---- */
+const themeBtn = document.getElementById('themebtn');
+function applyTheme(t){
+  document.body.classList.toggle('light', t==='light');
+  themeBtn.textContent = t==='light' ? '🌙 Dark' : '☀️ Light';
+  localStorage.setItem('dsa_theme', t);
+}
+themeBtn.onclick = () => applyTheme(document.body.classList.contains('light')?'dark':'light');
+applyTheme(localStorage.getItem('dsa_theme') || 'dark');
+
+/* ---- DSA Quiz (co-authored by Mohammed Ruman Shaik) ---- */
+const QUIZ = [
+  {q:"What is the time complexity of binary search?", opts:["O(n)","O(log n)","O(n log n)","O(1)"], a:1},
+  {q:"Which structure gives O(1) average lookup?", opts:["List","Queue","Hash map / dict","Binary tree"], a:2},
+  {q:"Stack follows which order?", opts:["FIFO","LIFO","Random","Sorted"], a:1},
+  {q:"Best structure to check 'have I seen this before?'", opts:["Set / dict","Array scan","String","Tuple"], a:0},
+  {q:"BFS uses what under the hood?", opts:["Stack","Heap","Queue","Dict"], a:2},
+  {q:"DFS on a tree is naturally implemented via…", opts:["Recursion","Sorting","Hashing","Two pointers"], a:0},
+  {q:"Sliding window solves subarray problems in…", opts:["O(n²)","O(n log n)","O(n)","O(1)"], a:2},
+  {q:"Python's sort is called…", opts:["Quicksort","Timsort","Mergesort","Bubblesort"], a:1},
+  {q:"'Longest substring without repeating chars' → best pattern?", opts:["Greedy","DP table","Sliding window + set","Binary search"], a:2},
+  {q:"heapq in Python is a…", opts:["Max-heap","Min-heap","Both","BST"], a:1},
+  {q:"Kadane's algorithm finds…", opts:["Longest path","Max subarray sum","Shortest path","Cycle length"], a:1},
+  {q:"Union-Find with path compression is nearly…", opts:["O(n)","O(log n)","O(1)","O(n log n)"], a:2},
+];
+let qOrder = [], qi = 0, qScore = 0;
+const modal = document.getElementById('quizmodal'), card = document.getElementById('quizcard');
+document.getElementById('quizbtn').onclick = () => {
+  qOrder = [...QUIZ].sort(()=>Math.random()-0.5).slice(0,5);
+  qi = 0; qScore = 0; modal.style.display = 'flex'; showQ();
+};
+modal.onclick = e => { if(e.target===modal && confirm('Close quiz?')) modal.style.display='none'; };
+function showQ(){
+  if(qi >= qOrder.length){
+    card.innerHTML = '<h3>🎉 Quiz done!</h3><p>You scored <b>'+qScore+'/'+qOrder.length+'</b>.</p>'+
+      (qScore>=4?'<p>Excellent — your fundamentals are sharp! 🏆</p>':qScore>=3?'<p>Solid! Review the misses and retry. 👍</p>':'<p>Revisit Lessons 13–16 and try again — you\'ll nail it. 💪</p>')+
+      '<button class="nav" style="margin-top:14px" onclick="document.getElementById(\'quizmodal\').style.display=\'none\'">Close</button>'+
+      '<button class="nav" style="margin-top:14px;background:#334155" onclick="document.getElementById(\'quizbtn\').click()">Retry</button>';
+    return;
+  }
+  const item = qOrder[qi];
+  card.innerHTML = '<h3>Question '+(qi+1)+' of '+qOrder.length+'</h3><p style="font-size:16px">'+item.q+'</p>'+
+    item.opts.map((o,i)=>'<button class="qopt" data-i="'+i+'">'+o+'</button>').join('')+
+    '<div id="qscore">Score: '+qScore+'</div>';
+  card.querySelectorAll('.qopt').forEach(b => b.onclick = () => {
+    const pick = +b.dataset.i, ok = pick === item.a;
+    b.classList.add(ok ? 'correct' : 'wrong');
+    if(!ok) card.querySelector('.qopt[data-i="'+item.a+'"]').classList.add('correct');
+    if(ok) qScore++;
+    card.querySelectorAll('.qopt').forEach(x => x.disabled = true);
+    setTimeout(()=>{ qi++; showQ(); }, 900);
+  });
 }
 </script>
 </body>
