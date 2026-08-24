@@ -1,9 +1,16 @@
 {
  "topic_idx": 0,
- "prob_idx": 0,
- "streak": 0,
- "longest_streak": 0,
- "last_done": null,
- "days": {},
- "total_solved": 0
+ "prob_idx": 1,
+ "streak": 1,
+ "longest_streak": 1,
+ "last_done": "2026-08-24",
+ "days": {
+  "2026-08-24": {
+   "prepared": true,
+   "committed": true,
+   "daily": false,
+   "topic": "two-sum"
+  }
+ },
+ "total_solved": 2
 }
