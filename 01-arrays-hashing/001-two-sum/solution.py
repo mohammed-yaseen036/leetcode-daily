@@ -1,14 +1,7 @@
-"""
-Two Sum
-DSA Topic: 01-arrays-hashing #1/450
-Link: https://leetcode.com/problems/two-sum/
-
-Approach (write before coding!):
-1.
-
-Complexity: Time O(?) Space O(?)
-"""
-
-
+# 1. Two Sum
 class Solution:
-    pass
+    def twoSum(self, nums, target):
+        d={}
+        for i,x in enumerate(nums):
+            if (y:=target-x) in d: return [d[y],i]
+            d[x]=i
