@@ -1,0 +1,14 @@
+{
+ "topic_idx": 0,
+ "prob_idx": 0,
+ "streak": 0,
+ "longest_streak": 0,
+ "last_done": null,
+ "days": {
+  "2026-08-24": {
+   "prepared": true,
+   "committed": false
+  }
+ },
+ "total_solved": 0
+}
